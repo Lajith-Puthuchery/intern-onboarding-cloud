@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: intern-starter-app
+  namespace: test
+  labels:
+    app: intern-starter-app
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: intern-starter-app
+  template:
+    metadata:
+      labels:
+        app: intern-starter-app
+    spec:
+      containers:
+        - name: app
+          image: us-central1-docker.pkg.dev/qpe-play/cloud-run-source-deploy/intern-starter-app:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+          env:
+            - name: MESSAGE
+              value: "Hello interns, from Kubernetes!"
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
